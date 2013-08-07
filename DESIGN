@@ -1,0 +1,22 @@
+
+
+Config is the main system that parses out the configuration file to set up
+the other classes.
+
+TcpListener listens for connections, accepts them. Can't do anything with them
+yet. We have to pass it to an Acceptor of some sort.
+
+HttpAcceptor, SpdyAcceptor -> takes a connection and handles its lifecycle,
+   which means taking raw bytes and pulling requests out of them.
+
+Service -> reads in HTTP requests and returns responses, using pools etc.
+
+....
+
+Pool manages creating backends when it has no more. It tries to keep a queue
+of them. There's a worker inside that just creates backends. Only one backend
+can be in Connecting state at a time.
+
+Service receives requests and puts them into a channel. A goroutine on Service
+reads requests and then backends and matches them up. This triggers the Pool
+goroutine to make more backends.
